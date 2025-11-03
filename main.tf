@@ -1,29 +1,18 @@
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-      version = "6.19.0"
-    }
-  }
-}
+module "vpc" {
+  source = "../modules/vpc"
 
-provider "aws" {
-  region     = "us-east-1"
-}
+  name_prefix = "iti-zag"
+  vpc_cidr    = "10.42.0.0/16"
+  azs         = ["us-east-1a", "us-east-1b"]
 
+  public_subnets_cidrs  = ["10.42.1.0/24", "10.42.2.0/24"]
+  private_subnets_cidrs = ["10.42.11.0/24", "10.42.12.0/24"]
 
-
-resource "aws_instance" "web" {
-  ami           = "ami-0ecb62995f68bb549"
-  instance_type = "t3.micro"
+  create_nat_per_az = false
 
   tags = {
-    Name = "webserver-iti"
+    Project = "lab"
   }
+
 }
 
-
-output "public_ip" {
-  description = "Public Ip address"
-  value = aws_instance.web.public_ip
-}
